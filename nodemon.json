@@ -1,0 +1,15 @@
+{
+  "verbose": true,
+  "watch": ["src"],
+  "ext": "js,json",
+  "ignore": [
+    "**/node_modules/**",
+    "**/uploads/**",
+    "**/scratch/**",
+    "**/.wwebjs_auth/**",
+    "**/.wwebjs_cache/**",
+    "qr.txt",
+    "backend.log"
+  ],
+  "delay": "2500"
+}
