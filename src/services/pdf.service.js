@@ -98,7 +98,7 @@ const generateLaporanBulanan = async (bulan, tahun) => {
   doc.end();
 
   return new Promise((resolve, reject) => {
-    stream.on('finish', () => resolve(`/uploads/${filename}`));
+    stream.on('finish', () => resolve(`/api/uploads/${filename}`));
     stream.on('error', reject);
   });
 };
@@ -176,7 +176,7 @@ const generateLaporanTahunan = async (tahun) => {
   doc.end();
 
   return new Promise((resolve, reject) => {
-    stream.on('finish', () => resolve(`/uploads/${filename}`));
+    stream.on('finish', () => resolve(`/api/uploads/${filename}`));
     stream.on('error', reject);
   });
 };
@@ -243,7 +243,7 @@ const generateLaporanTunggakan = async (bulan, tahun) => {
   doc.end();
 
   return new Promise((resolve, reject) => {
-    stream.on('finish', () => resolve(`/uploads/${filename}`));
+    stream.on('finish', () => resolve(`/api/uploads/${filename}`));
     stream.on('error', reject);
   });
 };
