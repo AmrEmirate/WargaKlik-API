@@ -195,14 +195,25 @@ const deleteWarga = async (req, res) => {
       const userId = warga.user_id;
 
       // Hapus data terkait yang merujuk ke warga ini
+      // First, delete all TagihanItem for Tagihans belonging to this Warga
+      const { TagihanItem } = require('../models');
+      const tagihans = await Tagihan.findAll({ where: { warga_id: warga.id }, transaction: t });
+      const tagihanIds = tagihans.map(tagihan => tagihan.id);
+      
+      if (tagihanIds.length > 0) {
+        await TagihanItem.destroy({ where: { tagihan_id: tagihanIds }, transaction: t });
+      }
+
       await Tagihan.destroy({ where: { warga_id: warga.id }, transaction: t });
       await WargaIuran.destroy({ where: { warga_id: warga.id }, transaction: t });
       
       // Hapus data warga
       await warga.destroy({ transaction: t });
 
-      // Hapus data user jika ada
+      // Hapus data user dan relasinya jika ada
       if (userId) {
+        const { RefreshToken } = require('../models');
+        await RefreshToken.destroy({ where: { user_id: userId }, transaction: t });
         await User.destroy({ where: { id: userId }, transaction: t });
       }
 
