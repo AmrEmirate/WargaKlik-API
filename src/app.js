@@ -53,7 +53,7 @@ app.use('/api/', globalLimiter);
 // Specific limiter for Auth (Brute-force protection)
 const authLimiter = isDevOrTest ? (req, res, next) => next() : rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 10,
+  max: 100, // Increased by 10x as requested
   message: { success: false, message: 'Terlalu banyak percobaan akses, silakan coba lagi dalam 5 menit.' }
 });
 
