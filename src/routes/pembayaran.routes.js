@@ -36,6 +36,7 @@ const midtransIPWhitelist = (req, res, next) => {
 
 // Public webhook (no auth, but IP-whitelisted + signature-verified)
 router.post('/midtrans/webhook', midtransIPWhitelist, pembayaranController.midtransWebhook);
+router.post('/midtrans/sync', authenticate, pembayaranController.syncMidtransTransaction);
 
 router.use(authenticate);
 

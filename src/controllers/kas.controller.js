@@ -15,14 +15,11 @@ const getAllKas = async (req, res) => {
     
     if (jenis) where.jenis = jenis;
     
-    // For specific month/year filtering, use raw queries or Op.and with sequelize.fn
     if (bulan && tahun) {
-      const sequelize = require('../config/database');
       const { Op } = require('sequelize');
-      where[Op.and] = [
-        sequelize.where(sequelize.fn('MONTH', sequelize.col('tanggal')), bulan),
-        sequelize.where(sequelize.fn('YEAR', sequelize.col('tanggal')), tahun)
-      ];
+      const startDate = new Date(tahun, bulan - 1, 1);
+      const endDate = new Date(tahun, bulan, 0, 23, 59, 59, 999);
+      where.tanggal = { [Op.between]: [startDate, endDate] };
     }
 
     const { count, rows } = await KasHarian.findAndCountAll({
@@ -103,23 +100,20 @@ const getStats = async (req, res) => {
       const m = d.getMonth() + 1;
       const y = d.getFullYear();
       
+      const startDate = new Date(y, m - 1, 1);
+      const endDate = new Date(y, m, 0, 23, 59, 59, 999);
+
       const masuk = await KasHarian.sum('nominal', {
         where: {
           jenis: 'masuk',
-          [Op.and]: [
-            sequelize.where(sequelize.fn('MONTH', sequelize.col('tanggal')), m),
-            sequelize.where(sequelize.fn('YEAR', sequelize.col('tanggal')), y)
-          ]
+          tanggal: { [Op.between]: [startDate, endDate] }
         }
       }) || 0;
 
       const keluar = await KasHarian.sum('nominal', {
         where: {
           jenis: 'keluar',
-          [Op.and]: [
-            sequelize.where(sequelize.fn('MONTH', sequelize.col('tanggal')), m),
-            sequelize.where(sequelize.fn('YEAR', sequelize.col('tanggal')), y)
-          ]
+          tanggal: { [Op.between]: [startDate, endDate] }
         }
       }) || 0;
 

@@ -216,4 +216,22 @@ const deleteWarga = async (req, res) => {
   }
 };
 
-module.exports = { getAllWarga, getWargaById, createWarga, updateWarga, deleteWarga };
+/**
+ * GET /api/warga/me
+ */
+const getMyWarga = async (req, res) => {
+  try {
+    const warga = await Warga.findOne({
+      where: { user_id: req.user.id },
+      include: [
+        { model: User, as: 'user', attributes: ['name', 'email', 'no_telepon', 'role'] }
+      ]
+    });
+    if (!warga) return error(res, 'Data kependudukan tidak ditemukan', 404);
+    return success(res, warga);
+  } catch (err) {
+    return error(res, 'Gagal mengambil data kependudukan', 500);
+  }
+};
+
+module.exports = { getAllWarga, getWargaById, createWarga, updateWarga, deleteWarga, getMyWarga };

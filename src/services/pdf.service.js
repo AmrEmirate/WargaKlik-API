@@ -14,13 +14,13 @@ const generateLaporanBulanan = async (bulan, tahun) => {
   const filename = `laporan-bulanan-${bulan}-${tahun}-${Date.now()}.pdf`;
   const filePath = path.join(UPLOADS_DIR, filename);
 
+  const startDate = new Date(tahun, bulan - 1, 1);
+  const endDate = new Date(tahun, bulan, 0, 23, 59, 59, 999);
+
   // Fetch data
   const kasData = await KasHarian.findAll({
     where: {
-      [Op.and]: [
-        sequelize.where(sequelize.fn('MONTH', sequelize.col('tanggal')), bulan),
-        sequelize.where(sequelize.fn('YEAR', sequelize.col('tanggal')), tahun)
-      ]
+      tanggal: { [Op.between]: [startDate, endDate] }
     },
     order: [['tanggal', 'ASC']]
   });
@@ -138,12 +138,12 @@ const generateLaporanTahunan = async (tahun) => {
 
   doc.font('Helvetica');
   for (let m = 1; m <= 12; m++) {
+    const startDate = new Date(tahun, m - 1, 1);
+    const endDate = new Date(tahun, m, 0, 23, 59, 59, 999);
+
     const kasData = await KasHarian.findAll({
       where: {
-        [Op.and]: [
-          sequelize.where(sequelize.fn('MONTH', sequelize.col('tanggal')), m),
-          sequelize.where(sequelize.fn('YEAR', sequelize.col('tanggal')), tahun)
-        ]
+        tanggal: { [Op.between]: [startDate, endDate] }
       }
     });
 

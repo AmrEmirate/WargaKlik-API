@@ -14,6 +14,7 @@ const createValidation = [
 router.use(authenticate);
 
 router.get('/', pengurusOnly, wargaController.getAllWarga);
+router.get('/me', wargaController.getMyWarga);
 router.get('/:id', pengurusOnly, wargaController.getWargaById);
 router.post('/', sekretarisUp, createValidation, validate, wargaController.createWarga);
 router.put('/:id', sekretarisUp, wargaController.updateWarga);

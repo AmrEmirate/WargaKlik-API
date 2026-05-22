@@ -45,4 +45,15 @@ const generateOrderId = (tagihanId) => {
   return `IURAN-${tagihanId}-${timestamp}`;
 };
 
-module.exports = { createTransaction, verifySignature, generateOrderId };
+/**
+ * Check transaction status from Midtrans directly
+ */
+const checkStatus = async (orderId) => {
+  try {
+    return await snap.transaction.status(orderId);
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports = { createTransaction, verifySignature, generateOrderId, checkStatus };

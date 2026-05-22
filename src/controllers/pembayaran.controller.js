@@ -312,4 +312,80 @@ const createManualPayment = async (req, res) => {
   }
 };
 
-module.exports = { getAllPembayaran, createMidtransTransaction, midtransWebhook, createManualPayment };
+/**
+ * POST /api/pembayaran/midtrans/sync
+ * Manually sync transaction status from Midtrans (useful for localhost testing)
+ */
+const syncMidtransTransaction = async (req, res) => {
+  try {
+    const { order_id } = req.body;
+    if (!order_id) return error(res, 'Order ID wajib diisi', 400);
+
+    const statusResponse = await midtransService.checkStatus(order_id);
+    const { transaction_status, status_code, gross_amount, signature_key } = statusResponse;
+
+    // Trigger the same logic as webhook but directly
+    // Instead of verifying signature (since we got it straight from Midtrans), we can just process it
+    const pembayaranList = await Pembayaran.findAll({ 
+      where: { reference_id: order_id },
+      include: [{ 
+        model: Tagihan, 
+        as: 'tagihan',
+        include: [{ model: Warga, as: 'warga', include: [{ model: User, as: 'user' }] }]
+      }]
+    });
+
+    if (pembayaranList.length === 0) {
+      return res.status(404).json({ message: 'Pembayaran tidak ditemukan' });
+    }
+
+    if (pembayaranList[0].status === 'success') {
+      return success(res, null, 'Status sudah lunas sebelumnya');
+    }
+
+    if (transaction_status === 'settlement' || transaction_status === 'capture') {
+      await sequelize.transaction(async (t) => {
+        for (const pembayaran of pembayaranList) {
+          const tagihan = pembayaran.tagihan;
+          
+          await pembayaran.update({ status: 'success' }, { transaction: t });
+          await tagihan.update({ status: 'lunas' }, { transaction: t });
+          
+          await KasHarian.create({
+            pembayaran_id: pembayaran.id,
+            tanggal: new Date(),
+            jenis: 'masuk',
+            kategori: 'iuran',
+            keterangan: `Pembayaran Iuran RT ${tagihan.bulan}/${tagihan.tahun} - ${tagihan.warga.no_rumah} (Rapel)`,
+            nominal: pembayaran.jumlah_bayar,
+            dicatat_oleh: tagihan.warga.user_id || 1
+          }, { transaction: t });
+
+          if (tagihan.warga.user_id) {
+            await notificationService.notify(tagihan.warga.user_id, {
+              title: 'Pembayaran Berhasil',
+              message: `Pembayaran iuran bulan ${tagihan.bulan}/${tagihan.tahun} sebesar Rp ${Number(pembayaran.jumlah_bayar).toLocaleString('id-ID')} telah berhasil.`,
+              type: 'pembayaran',
+              amount: pembayaran.jumlah_bayar,
+              refId: pembayaran.id,
+              refType: 'pembayaran',
+              channels: ['inapp', 'email', 'whatsapp']
+            });
+          }
+        }
+      });
+      return success(res, null, 'Status pembayaran berhasil di-sync (Lunas)');
+    } else if (transaction_status === 'expire' || transaction_status === 'cancel' || transaction_status === 'deny') {
+      const finalStatus = transaction_status === 'expire' ? 'expired' : 'failed';
+      await Pembayaran.update({ status: finalStatus }, { where: { reference_id: order_id } });
+      return success(res, null, `Status pembayaran berhasil di-sync (${finalStatus})`);
+    }
+
+    return success(res, null, 'Status pembayaran berhasil di-sync (Pending)');
+  } catch (err) {
+    console.error('Midtrans sync error:', err);
+    return error(res, 'Gagal sync status Midtrans', 500);
+  }
+};
+
+module.exports = { getAllPembayaran, createMidtransTransaction, midtransWebhook, createManualPayment, syncMidtransTransaction };

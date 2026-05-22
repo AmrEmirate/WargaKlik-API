@@ -33,11 +33,17 @@ app.use(helmet({
   }
 }));
 
+// CORS
+app.use(cors({
+  origin: [env.frontendUrl, 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001'],
+  credentials: true
+}));
+
 // Global Rate Limiting
-const isTest = process.env.NODE_ENV === 'test';
-const globalLimiter = isTest ? (req, res, next) => next() : rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+const isDevOrTest = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development';
+const globalLimiter = isDevOrTest ? (req, res, next) => next() : rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 500, // Ditingkatkan dari 100 menjadi 500 agar tidak terlalu ketat
   message: { success: false, message: 'Terlalu banyak permintaan dari IP ini, silakan coba lagi nanti.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -45,17 +51,11 @@ const globalLimiter = isTest ? (req, res, next) => next() : rateLimit({
 app.use('/api/', globalLimiter);
 
 // Specific limiter for Auth (Brute-force protection)
-const authLimiter = isTest ? (req, res, next) => next() : rateLimit({
-  windowMs: 15 * 60 * 1000,
+const authLimiter = isDevOrTest ? (req, res, next) => next() : rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
   max: 10,
-  message: { success: false, message: 'Terlalu banyak percobaan akses, silakan coba lagi dalam 15 menit.' }
+  message: { success: false, message: 'Terlalu banyak percobaan akses, silakan coba lagi dalam 5 menit.' }
 });
-
-// CORS
-app.use(cors({
-  origin: env.frontendUrl,
-  credentials: true
-}));
 
 // Logging
 if (process.env.NODE_ENV === 'development') {
