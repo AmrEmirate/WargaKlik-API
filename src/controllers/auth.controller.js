@@ -282,6 +282,13 @@ const verifyOtp = async (req, res) => {
     user.otp_attempts = 0;
     await user.save();
 
+    // Set Warga status to active when successfully registered/verified
+    const warga = await Warga.findOne({ where: { user_id: user.id } });
+    if (warga && !warga.is_active) {
+      warga.is_active = true;
+      await warga.save();
+    }
+
     const tokens = await generateTokens(user);
 
     return success(res, {
