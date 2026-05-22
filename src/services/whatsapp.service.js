@@ -25,7 +25,7 @@ class WhatsAppService {
 
       puppeteer: {
         headless: true,
-        ...(process.platform === 'linux' && { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable' }),
+        ...(process.platform === 'linux' && process.env.PUPPETEER_EXECUTABLE_PATH ? { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH } : {}),
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
