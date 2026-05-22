@@ -25,10 +25,14 @@ class WhatsAppService {
 
       puppeteer: {
         headless: true,
-        ...(process.platform === 'linux' && { executablePath: '/usr/bin/google-chrome-stable' }),
+        ...(process.platform === 'linux' && { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable' }),
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--no-first-run',
+          '--disable-gpu'
         ],
       }
     });
