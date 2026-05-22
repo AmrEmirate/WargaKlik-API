@@ -2,7 +2,6 @@ const multer = require('multer');
 const path = require('path');
 const crypto = require('crypto');
 const fs = require('fs');
-const FileType = require('file-type');
 
 // Ensure upload directory exists
 const uploadDir = path.join(__dirname, '../../uploads');
@@ -55,8 +54,9 @@ const validateFileContent = async (req, res, next) => {
   if (!req.file) return next();
 
   try {
+    const { fileTypeFromFile } = await import('file-type');
     const filePath = req.file.path;
-    const type = await FileType.fromFile(filePath);
+    const type = await fileTypeFromFile(filePath);
 
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
     
