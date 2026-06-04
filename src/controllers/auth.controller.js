@@ -67,7 +67,7 @@ const validatePasswordComplexity = (password) => {
 const login = async (req, res) => {
   try {
     const { identifier, email, password } = req.body;
-    const loginId = identifier || email;
+    const loginId = (identifier || email)?.trim();
 
     if (!loginId || !password) {
       return error(res, 'Email/Nomor Telepon dan password wajib diisi', 400);
@@ -198,7 +198,7 @@ const logout = async (req, res) => {
 const activate = async (req, res) => {
   try {
     const { identifier, email } = req.body;
-    const loginId = identifier || email;
+    const loginId = (identifier || email)?.trim();
     if (!loginId) return error(res, 'Email/Nomor Telepon wajib diisi', 400);
 
     const user = await User.findOne({ 
@@ -237,7 +237,7 @@ const activate = async (req, res) => {
 const verifyOtp = async (req, res) => {
   try {
     const { identifier, email, otp_code, password } = req.body;
-    const loginId = identifier || email;
+    const loginId = (identifier || email)?.trim();
     if (!loginId || !otp_code || !password) {
       return error(res, 'Email/Nomor Telepon, kode OTP, dan password baru wajib diisi', 400);
     }
@@ -312,7 +312,7 @@ const verifyOtp = async (req, res) => {
 const forgotPassword = async (req, res) => {
   try {
     const { identifier, email } = req.body;
-    const loginId = identifier || email;
+    const loginId = (identifier || email)?.trim();
     if (!loginId) return error(res, 'Email/Nomor Telepon wajib diisi', 400);
 
     const user = await User.findOne({ 
@@ -351,7 +351,7 @@ const forgotPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
   try {
     const { identifier, email, otp_code, password } = req.body;
-    const loginId = identifier || email;
+    const loginId = (identifier || email)?.trim();
     if (!loginId || !otp_code || !password) {
       return error(res, 'Email/Nomor Telepon, kode OTP, dan password baru wajib diisi', 400);
     }
@@ -499,7 +499,7 @@ const getMe = async (req, res) => {
 const validateOtp = async (req, res) => {
   try {
     const { identifier, email, otp_code } = req.body;
-    const loginId = identifier || email;
+    const loginId = (identifier || email)?.trim();
     if (!loginId || !otp_code) {
       return error(res, 'Email/Nomor Telepon dan kode OTP wajib diisi', 400);
     }
