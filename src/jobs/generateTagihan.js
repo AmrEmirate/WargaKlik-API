@@ -7,6 +7,7 @@ const { Warga, IuranMaster, Tagihan, TagihanItem, WargaIuran } = require('../mod
  * Supports per-warga custom iuran amounts via warga_iuran table
  */
 const setupGenerateTagihan = () => {
+  //Menit ke-1, Jam 00 (tengah malam), Tanggal 1, Setiap Bulan (*), Setiap Hari (*)
   cron.schedule('1 0 1 * *', async () => {
     console.log('⏰ [CRON] Generating tagihan otomatis...');
     try {
