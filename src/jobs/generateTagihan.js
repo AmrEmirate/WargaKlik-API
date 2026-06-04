@@ -1,5 +1,6 @@
 const cron = require('node-cron');
 const { Warga, IuranMaster, Tagihan, TagihanItem, WargaIuran } = require('../models');
+const notificationService = require('../services/notification.service');
 
 /**
  * Generate monthly tagihan for all active warga
@@ -97,6 +98,26 @@ const setupGenerateTagihan = () => {
             tagihan_id: tagihan.id,
             ...item
           });
+        }
+
+        // Send notification if user_id is set
+        if (warga.user_id) {
+          try {
+            const bulanName = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][((parseInt(bulan) - 1) % 12 + 12) % 12];
+            const formattedAmount = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalNominal);
+
+            await notificationService.notify(warga.user_id, {
+              title: 'Tagihan Baru Terbit',
+              message: `Tagihan periode ${bulanName} ${tahun} sebesar ${formattedAmount} telah terbit. Silakan lakukan pembayaran.`,
+              type: 'tagihan',
+              refId: tagihan.id,
+              refType: 'tagihan',
+              amount: totalNominal,
+              channels: ['inapp', 'email', 'whatsapp']
+            });
+          } catch (notifErr) {
+            console.error(`Failed to send notification to warga ID ${warga.id}:`, notifErr.message);
+          }
         }
 
         created++;

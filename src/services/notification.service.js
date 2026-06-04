@@ -40,8 +40,34 @@ const notify = async (userId, opts) => {
             customMessage: message
           });
         } else if (type === 'tagihan') {
-          // For reminders
-          await mailService.sendReminder(user.email, { bulan: '', tahun: '', total: message });
+          // For reminders - load month and year from database using refId if available
+          let bulanVal = '';
+          let tahunVal = '';
+          let totalVal = amount || 0;
+
+          if (refType === 'tagihan' && refId) {
+            try {
+              const { Tagihan } = require('../models');
+              const tagihan = await Tagihan.findByPk(refId);
+              if (tagihan) {
+                const bulans = [
+                  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                ];
+                bulanVal = bulans[parseInt(tagihan.bulan) - 1] || '';
+                tahunVal = tagihan.tahun;
+                totalVal = tagihan.total_nominal;
+              }
+            } catch (dbErr) {
+              console.error('Failed to fetch tagihan details for email:', dbErr.message);
+            }
+          }
+
+          await mailService.sendReminder(user.email, {
+            bulan: bulanVal,
+            tahun: tahunVal,
+            total: totalVal
+          });
         } else {
           // Generic system notification
           await mailService.sendGenericNotification(user.email, title, message);
