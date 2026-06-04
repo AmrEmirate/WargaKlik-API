@@ -57,9 +57,10 @@ const createMidtransTransaction = async (req, res) => {
   try {
     const { tagihan_ids, tagihan_id } = req.body;
     const rawIds = tagihan_ids || tagihan_id;
+    if (!rawIds || (Array.isArray(rawIds) && rawIds.length === 0)) {
+      return error(res, 'Tagihan ID tidak boleh kosong', 400);
+    }
     const ids = Array.isArray(rawIds) ? rawIds : [rawIds];
-    
-    if (!ids || ids.length === 0) return error(res, 'Tagihan ID tidak boleh kosong', 400);
 
     const tagihanList = await Tagihan.findAll({
       where: { id: ids },
