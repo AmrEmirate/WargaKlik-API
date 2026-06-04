@@ -65,6 +65,19 @@ const createKas = async (req, res) => {
       bukti_url = `/uploads/${req.file.filename}`;
     }
 
+    if (parseFloat(nominal) <= 0) {
+      return error(res, 'Nominal harus lebih besar dari 0', 400);
+    }
+
+    if (jenis === 'keluar') {
+      const summaryMasuk = await KasHarian.sum('nominal', { where: { jenis: 'masuk' } }) || 0;
+      const summaryKeluar = await KasHarian.sum('nominal', { where: { jenis: 'keluar' } }) || 0;
+      const saldo = summaryMasuk - summaryKeluar;
+      if (parseFloat(nominal) > saldo) {
+        return error(res, 'Nominal pengeluaran melebihi saldo kas saat ini', 400);
+      }
+    }
+
     const kas = await KasHarian.create({
       tanggal,
       jenis,
