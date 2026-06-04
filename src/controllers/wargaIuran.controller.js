@@ -72,6 +72,10 @@ const setWargaIuran = async (req, res) => {
     for (const item of items) {
       const { iuran_master_id, nominal_custom, is_excluded } = item;
 
+      if (nominal_custom !== null && nominal_custom !== undefined && parseFloat(nominal_custom) <= 0) {
+        return error(res, 'Nominal custom harus lebih besar dari 0', 400);
+      }
+
       // Check if custom entry exists
       const existing = await WargaIuran.findOne({
         where: { warga_id, iuran_master_id }

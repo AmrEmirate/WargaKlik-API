@@ -13,7 +13,13 @@ const IuranMaster = sequelize.define('IuranMaster', {
   },
   nominal: {
     type: DataTypes.DECIMAL(12, 2),
-    allowNull: false
+    allowNull: false,
+    validate: {
+      min: {
+        args: [0.01],
+        msg: 'Nominal iuran harus lebih besar dari 0'
+      }
+    }
   },
   periode: {
     type: DataTypes.ENUM('bulanan', 'tahunan'),

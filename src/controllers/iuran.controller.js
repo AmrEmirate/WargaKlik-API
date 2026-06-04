@@ -23,6 +23,10 @@ const createIuran = async (req, res) => {
   try {
     const { nama, nominal, periode } = req.body;
     
+    if (nominal === undefined || nominal === null || parseFloat(nominal) <= 0) {
+      return error(res, 'Nominal iuran harus lebih besar dari 0', 400);
+    }
+    
     const iuran = await IuranMaster.create({
       nama,
       nominal,
@@ -32,7 +36,7 @@ const createIuran = async (req, res) => {
     
     return success(res, iuran, 'Iuran berhasil ditambahkan', 201);
   } catch (err) {
-    return error(res, 'Gagal menambahkan iuran', 500);
+    return error(res, err.errors?.[0]?.message || 'Gagal menambahkan iuran', 500);
   }
 };
 
@@ -42,20 +46,25 @@ const createIuran = async (req, res) => {
 const updateIuran = async (req, res) => {
   try {
     const { nama, nominal, periode, is_active } = req.body;
+    
+    if (nominal !== undefined && nominal !== null && parseFloat(nominal) <= 0) {
+      return error(res, 'Nominal iuran harus lebih besar dari 0', 400);
+    }
+    
     const iuran = await IuranMaster.findByPk(req.params.id);
     
     if (!iuran) return error(res, 'Iuran tidak ditemukan', 404);
     
     await iuran.update({
       nama: nama || iuran.nama,
-      nominal: nominal || iuran.nominal,
+      nominal: nominal !== undefined ? nominal : iuran.nominal,
       periode: periode || iuran.periode,
       is_active: is_active !== undefined ? is_active : iuran.is_active
     });
     
     return success(res, iuran, 'Iuran berhasil diupdate');
   } catch (err) {
-    return error(res, 'Gagal mengupdate iuran', 500);
+    return error(res, err.errors?.[0]?.message || 'Gagal mengupdate iuran', 500);
   }
 };
 
