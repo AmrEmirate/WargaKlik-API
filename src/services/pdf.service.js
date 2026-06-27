@@ -25,6 +25,16 @@ const generateLaporanBulanan = async (bulan, tahun) => {
     order: [['tanggal', 'ASC']]
   });
 
+  const previousKasData = await KasHarian.findAll({
+    where: {
+      tanggal: { [Op.lt]: startDate }
+    }
+  });
+
+  const prevMasuk = previousKasData.filter(k => k.jenis === 'masuk').reduce((sum, k) => sum + parseFloat(k.nominal), 0);
+  const prevKeluar = previousKasData.filter(k => k.jenis === 'keluar').reduce((sum, k) => sum + parseFloat(k.nominal), 0);
+  const saldoBulanLalu = prevMasuk - prevKeluar;
+
   const totalMasuk = kasData
     .filter(k => k.jenis === 'masuk')
     .reduce((sum, k) => sum + parseFloat(k.nominal), 0);
@@ -32,6 +42,8 @@ const generateLaporanBulanan = async (bulan, tahun) => {
   const totalKeluar = kasData
     .filter(k => k.jenis === 'keluar')
     .reduce((sum, k) => sum + parseFloat(k.nominal), 0);
+
+  const saldoAkhir = saldoBulanLalu + totalMasuk - totalKeluar;
 
   const tunggakan = await Tagihan.findAll({
     where: { bulan, tahun, status: 'belum_bayar' },
@@ -52,9 +64,10 @@ const generateLaporanBulanan = async (bulan, tahun) => {
   doc.fontSize(14).font('Helvetica-Bold').text('Ringkasan');
   doc.moveDown(0.5);
   doc.fontSize(11).font('Helvetica');
+  doc.text(`Saldo Bulan Lalu : Rp ${saldoBulanLalu.toLocaleString('id-ID')}`);
   doc.text(`Total Pemasukan  : Rp ${totalMasuk.toLocaleString('id-ID')}`);
   doc.text(`Total Pengeluaran: Rp ${totalKeluar.toLocaleString('id-ID')}`);
-  doc.text(`Saldo            : Rp ${(totalMasuk - totalKeluar).toLocaleString('id-ID')}`);
+  doc.text(`Saldo Akhir      : Rp ${saldoAkhir.toLocaleString('id-ID')}`);
   doc.text(`Jumlah Tunggakan : ${tunggakan.length} warga`);
   doc.moveDown(2);
 

@@ -121,8 +121,8 @@ async function seed() {
     // ─────────────────────────────────────────────
     console.log('📋 Seeding Tagihan & TagihanItem...');
     const tagihanRecords = [];
-    const bulanList = [4, 5]; // April & Mei 2025
-    const tahun = 2025;
+    const bulanList = [5, 6]; // Dynamic months
+    const tahun = 2026;
     const totalNominal = 100000; // 50k + 30k + 20k
 
     for (const warga of wargaRecords) {
@@ -131,8 +131,8 @@ async function seed() {
           warga_id: warga.id,
           bulan,
           tahun,
-          periode_mulai:   `${tahun}-0${bulan}-01`,
-          periode_selesai: `${tahun}-0${bulan}-${bulan === 4 ? '30' : '31'}`,
+          periode_mulai:   `${tahun}-${String(bulan).padStart(2, '0')}-01`,
+          periode_selesai: `${tahun}-${String(bulan).padStart(2, '0')}-28`,
           total_nominal: totalNominal,
           status: 'belum_bayar',
         });
@@ -162,7 +162,7 @@ async function seed() {
         dicatat_oleh: userBendahara.id,
         metode:       'manual',
         jumlah_bayar: 100000,
-        tanggal_bayar: '2025-04-10',
+        tanggal_bayar: '2026-05-10',
         reference_id: `MNL-${tagihan.id}-APR2025`,
         status:       'success',
         bukti_url:    `https://storage.wargaklik.com/bukti/manual-apr2025-${tagihan.id}.jpg`,
@@ -183,7 +183,7 @@ async function seed() {
     for (const p of pembayaranRecords) {
       await KasHarian.create({
         pembayaran_id: p.id,
-        tanggal:       '2025-04-10',
+        tanggal:       '2026-05-10',
         jenis:         'masuk',
         kategori:      'Iuran Warga',
         keterangan:    'Pembayaran iuran bulan April 2025',
@@ -194,11 +194,11 @@ async function seed() {
     }
 
     const pengeluaranList = [
-      { tanggal: '2025-04-12', kategori: 'Operasional', keterangan: 'Pembelian alat kebersihan RT',  nominal: 150000, bukti: 'nota-kebersihan-apr2025.jpg' },
-      { tanggal: '2025-04-15', kategori: 'Keamanan',    keterangan: 'Bayar jasa satpam bulan April', nominal: 200000, bukti: 'nota-satpam-apr2025.jpg' },
-      { tanggal: '2025-04-20', kategori: 'Sosial',      keterangan: 'Santunan warga sakit',           nominal: 100000, bukti: 'nota-santunan-apr2025.jpg' },
-      { tanggal: '2025-04-25', kategori: 'Operasional', keterangan: 'Pembelian ATK sekretariat',      nominal: 75000,  bukti: 'nota-atk-apr2025.jpg' },
-      { tanggal: '2025-04-30', kategori: 'Sosial',      keterangan: 'Acara gotong royong',             nominal: 250000, bukti: 'nota-gotongroyong-apr2025.jpg' },
+      { tanggal: '2026-05-12', kategori: 'Operasional', keterangan: 'Pembelian alat kebersihan RT',  nominal: 150000, bukti: 'nota-kebersihan-apr2025.jpg' },
+      { tanggal: '2026-05-15', kategori: 'Keamanan',    keterangan: 'Bayar jasa satpam bulan April', nominal: 200000, bukti: 'nota-satpam-apr2025.jpg' },
+      { tanggal: '2026-05-20', kategori: 'Sosial',      keterangan: 'Santunan warga sakit',           nominal: 100000, bukti: 'nota-santunan-apr2025.jpg' },
+      { tanggal: '2026-05-25', kategori: 'Operasional', keterangan: 'Pembelian ATK sekretariat',      nominal: 75000,  bukti: 'nota-atk-apr2025.jpg' },
+      { tanggal: '2026-05-28', kategori: 'Sosial',      keterangan: 'Acara gotong royong',             nominal: 250000, bukti: 'nota-gotongroyong-apr2025.jpg' },
     ];
 
     // Pengeluaran kas: pembayaran_id diisi dengan pembayaran pertama sebagai referensi kas terkait
@@ -297,13 +297,13 @@ async function seed() {
       { file_url: 'https://storage.wargaklik.com/laporan/bulanan-jan-2025.pdf',      bulan: 1,  tahun: 2025, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan Januari 2025 disetujui tanpa catatan.',         pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-02-05') },
       { file_url: 'https://storage.wargaklik.com/laporan/bulanan-feb-2025.pdf',      bulan: 2,  tahun: 2025, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan Februari 2025 disetujui tanpa catatan.',        pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-03-05') },
       { file_url: 'https://storage.wargaklik.com/laporan/bulanan-mar-2025.pdf',      bulan: 3,  tahun: 2025, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan Maret 2025 disetujui tanpa catatan.',           pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-04-05') },
-      { file_url: 'https://storage.wargaklik.com/laporan/bulanan-apr-2025.pdf',      bulan: 4,  tahun: 2025, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan April 2025 disetujui, surplus Rp475.000.',      pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-05-05') },
+      { file_url: 'https://storage.wargaklik.com/laporan/bulanan-apr-2025.pdf',      bulan: 4,  tahun: 2025, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan April 2025 disetujui, surplus Rp475.000.',      pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2026-06-05') },
       { file_url: 'https://storage.wargaklik.com/laporan/bulanan-mei-2025.pdf',      bulan: 5,  tahun: 2025, jenis: 'bulanan',   status: 'draft',    komentar: 'Laporan bulan Mei dalam proses verifikasi bendahara.',  pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-06-01') },
       { file_url: 'https://storage.wargaklik.com/laporan/bulanan-jun-2025.pdf',      bulan: 6,  tahun: 2025, jenis: 'bulanan',   status: 'draft',    komentar: 'Laporan bulan Juni baru dibuat, menunggu persetujuan.', pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-07-01') },
       { file_url: 'https://storage.wargaklik.com/laporan/tahunan-2024.pdf',          bulan: 12, tahun: 2024, jenis: 'tahunan',   status: 'approved', komentar: 'Laporan Tahunan 2024 disetujui oleh Ketua RT.',         pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-01-15') },
-      { file_url: 'https://storage.wargaklik.com/laporan/tunggakan-q1-2025.pdf',     bulan: 3,  tahun: 2025, jenis: 'tunggakan', status: 'approved', komentar: 'Laporan tunggakan Q1 2025 disetujui, 5 warga menunggak.', pembuat_id: userSekretaris.id, penyetuju_id: userRT.id, disetujui_at: new Date('2025-04-10') },
+      { file_url: 'https://storage.wargaklik.com/laporan/tunggakan-q1-2025.pdf',     bulan: 3,  tahun: 2025, jenis: 'tunggakan', status: 'approved', komentar: 'Laporan tunggakan Q1 2025 disetujui, 5 warga menunggak.', pembuat_id: userSekretaris.id, penyetuju_id: userRT.id, disetujui_at: new Date('2026-05-10') },
       { file_url: 'https://storage.wargaklik.com/laporan/tahunan-2025-draft.pdf',    bulan: 12, tahun: 2025, jenis: 'tahunan',   status: 'draft',    komentar: 'Laporan tahunan 2025 sedang disiapkan oleh bendahara.', pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2026-01-10') },
-      { file_url: 'https://storage.wargaklik.com/laporan/tunggakan-apr-2025.pdf',    bulan: 4,  tahun: 2025, jenis: 'tunggakan', status: 'draft',    komentar: 'Laporan tunggakan April 2025 menunggu verifikasi data.', pembuat_id: userSekretaris.id, penyetuju_id: userRT.id, disetujui_at: new Date('2025-05-15') },
+      { file_url: 'https://storage.wargaklik.com/laporan/tunggakan-apr-2025.pdf',    bulan: 4,  tahun: 2025, jenis: 'tunggakan', status: 'draft',    komentar: 'Laporan tunggakan April 2025 menunggu verifikasi data.', pembuat_id: userSekretaris.id, penyetuju_id: userRT.id, disetujui_at: new Date('2026-06-15') },
     ];
 
     for (const l of laporanData) {
