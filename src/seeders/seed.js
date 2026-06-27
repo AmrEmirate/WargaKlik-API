@@ -293,17 +293,29 @@ async function seed() {
     // 9. LAPORAN  (10 laporan bulanan & tahunan)
     // ─────────────────────────────────────────────
     console.log('📋 Seeding Laporan...');
+    const pdfService = require('../services/pdf.service');
+    const fs = require('fs');
+    const path = require('path');
+    const uploadsDir = path.join(__dirname, '../../uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    const nDate = new Date();
+    const cM = nDate.getMonth() + 1;
+    const cY = nDate.getFullYear();
+    const pDate = new Date(cY, nDate.getMonth() - 1, 1);
+    const pM = pDate.getMonth() + 1;
+    const pY = pDate.getFullYear();
+
+    const urlPrevBulanan = await pdfService.generateLaporanBulanan(pM, pY);
+    const urlCurrBulanan = await pdfService.generateLaporanBulanan(cM, cY);
+    const urlTahunan = await pdfService.generateLaporanTahunan(cY);
+
     const laporanData = [
-      { file_url: 'https://storage.wargaklik.com/laporan/bulanan-jan-2025.pdf',      bulan: 1,  tahun: 2025, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan Januari 2025 disetujui tanpa catatan.',         pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-02-05') },
-      { file_url: 'https://storage.wargaklik.com/laporan/bulanan-feb-2025.pdf',      bulan: 2,  tahun: 2025, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan Februari 2025 disetujui tanpa catatan.',        pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-03-05') },
-      { file_url: 'https://storage.wargaklik.com/laporan/bulanan-mar-2025.pdf',      bulan: 3,  tahun: 2025, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan Maret 2025 disetujui tanpa catatan.',           pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-04-05') },
-      { file_url: 'https://storage.wargaklik.com/laporan/bulanan-apr-2025.pdf',      bulan: 4,  tahun: 2025, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan April 2025 disetujui, surplus Rp475.000.',      pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2026-06-05') },
-      { file_url: 'https://storage.wargaklik.com/laporan/bulanan-mei-2025.pdf',      bulan: 5,  tahun: 2025, jenis: 'bulanan',   status: 'draft',    komentar: 'Laporan bulan Mei dalam proses verifikasi bendahara.',  pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-06-01') },
-      { file_url: 'https://storage.wargaklik.com/laporan/bulanan-jun-2025.pdf',      bulan: 6,  tahun: 2025, jenis: 'bulanan',   status: 'draft',    komentar: 'Laporan bulan Juni baru dibuat, menunggu persetujuan.', pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-07-01') },
-      { file_url: 'https://storage.wargaklik.com/laporan/tahunan-2024.pdf',          bulan: 12, tahun: 2024, jenis: 'tahunan',   status: 'approved', komentar: 'Laporan Tahunan 2024 disetujui oleh Ketua RT.',         pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2025-01-15') },
-      { file_url: 'https://storage.wargaklik.com/laporan/tunggakan-q1-2025.pdf',     bulan: 3,  tahun: 2025, jenis: 'tunggakan', status: 'approved', komentar: 'Laporan tunggakan Q1 2025 disetujui, 5 warga menunggak.', pembuat_id: userSekretaris.id, penyetuju_id: userRT.id, disetujui_at: new Date('2026-05-10') },
-      { file_url: 'https://storage.wargaklik.com/laporan/tahunan-2025-draft.pdf',    bulan: 12, tahun: 2025, jenis: 'tahunan',   status: 'draft',    komentar: 'Laporan tahunan 2025 sedang disiapkan oleh bendahara.', pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date('2026-01-10') },
-      { file_url: 'https://storage.wargaklik.com/laporan/tunggakan-apr-2025.pdf',    bulan: 4,  tahun: 2025, jenis: 'tunggakan', status: 'draft',    komentar: 'Laporan tunggakan April 2025 menunggu verifikasi data.', pembuat_id: userSekretaris.id, penyetuju_id: userRT.id, disetujui_at: new Date('2026-06-15') },
+      { file_url: urlPrevBulanan, bulan: pM,  tahun: pY, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan bulan lalu disetujui tanpa catatan.',         pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date() },
+      { file_url: urlCurrBulanan, bulan: cM,  tahun: cY, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan bulan ini disetujui.', pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date() },
+      { file_url: urlTahunan,     bulan: 12,     tahun: cY, jenis: 'tahunan',   status: 'approved', komentar: 'Laporan tahunan.',         pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date() },
     ];
 
     for (const l of laporanData) {
