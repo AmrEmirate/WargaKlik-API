@@ -332,38 +332,38 @@ async function seed() {
     console.log(`   ✔ ${notifData.length} Notifikasi dibuat`);
 
     // ─────────────────────────────────────────────
-    // 9. LAPORAN  (10 laporan bulanan & tahunan)
+    // 9. LAPORAN (Di-comment agar bisa digenerate dari UI & menghindari error unduhan file lokal)
     // ─────────────────────────────────────────────
-    console.log('📋 Seeding Laporan...');
-    const pdfService = require('../services/pdf.service');
-    const fs = require('fs');
-    const path = require('path');
-    const uploadsDir = path.join(__dirname, '../../uploads');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
+    // console.log('📋 Seeding Laporan...');
+    // const pdfService = require('../services/pdf.service');
+    // const fs = require('fs');
+    // const path = require('path');
+    // const uploadsDir = path.join(__dirname, '../../uploads');
+    // if (!fs.existsSync(uploadsDir)) {
+    //   fs.mkdirSync(uploadsDir, { recursive: true });
+    // }
 
-    const nDate = new Date();
-    const cM = nDate.getMonth() + 1;
-    const cY = nDate.getFullYear();
-    const pDate = new Date(cY, nDate.getMonth() - 1, 1);
-    const pM = pDate.getMonth() + 1;
-    const pY = pDate.getFullYear();
+    // const nDate = new Date();
+    // const cM = nDate.getMonth() + 1;
+    // const cY = nDate.getFullYear();
+    // const pDate = new Date(cY, nDate.getMonth() - 1, 1);
+    // const pM = pDate.getMonth() + 1;
+    // const pY = pDate.getFullYear();
 
-    const urlPrevBulanan = await pdfService.generateLaporanBulanan(pM, pY);
-    const urlCurrBulanan = await pdfService.generateLaporanBulanan(cM, cY);
-    const urlTahunan = await pdfService.generateLaporanTahunan(cY);
+    // const urlPrevBulanan = await pdfService.generateLaporanBulanan(pM, pY);
+    // const urlCurrBulanan = await pdfService.generateLaporanBulanan(cM, cY);
+    // const urlTahunan = await pdfService.generateLaporanTahunan(cY);
 
-    const laporanData = [
-      { file_url: urlPrevBulanan, bulan: pM,  tahun: pY, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan bulan lalu disetujui tanpa catatan.',         pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date() },
-      { file_url: urlCurrBulanan, bulan: cM,  tahun: cY, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan bulan ini disetujui.', pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date() },
-      { file_url: urlTahunan,     bulan: 12,     tahun: cY, jenis: 'tahunan',   status: 'approved', komentar: 'Laporan tahunan.',         pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date() },
-    ];
+    // const laporanData = [
+    //   { file_url: urlPrevBulanan, bulan: pM,  tahun: pY, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan bulan lalu disetujui tanpa catatan.',         pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date() },
+    //   { file_url: urlCurrBulanan, bulan: cM,  tahun: cY, jenis: 'bulanan',   status: 'approved', komentar: 'Laporan bulan ini disetujui.', pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date() },
+    //   { file_url: urlTahunan,     bulan: 12,     tahun: cY, jenis: 'tahunan',   status: 'approved', komentar: 'Laporan tahunan.',         pembuat_id: userBendahara.id,  penyetuju_id: userRT.id, disetujui_at: new Date() },
+    // ];
 
-    for (const l of laporanData) {
-      await Laporan.create(l);
-    }
-    console.log(`   ✔ ${laporanData.length} Laporan dibuat`);
+    // for (const l of laporanData) {
+    //   await Laporan.create(l);
+    // }
+    // console.log(`   ✔ ${laporanData.length} Laporan dibuat`);
 
     // ─────────────────────────────────────────────
     // RINGKASAN
@@ -381,7 +381,7 @@ async function seed() {
     console.log(`  kas_harian     : ${pembayaranRecords.length + pengeluaranList.length}`);
     console.log(`  pengumuman     : ${pengumumanData.length}`);
     console.log(`  notifikasi     : ${notifData.length} (10 warga + 10 RT + 5 bendahara + 5 sekretaris)`);
-    console.log(`  laporan        : ${laporanData.length}`);
+    console.log(`  laporan        : 0 (Di-comment)`);
     console.log('══════════════════════════════════════════════');
     console.log('\n🔑  Kredensial login:');
     console.log(`  RT            : ${emailRT} (Sandi: SandiRT123!)`);
