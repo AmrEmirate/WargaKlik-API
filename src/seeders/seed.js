@@ -24,49 +24,91 @@ async function seed() {
     await sequelize.sync({ force: true });
     console.log('✅ Database synced (force: true — semua tabel di-reset)\n');
 
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const hashRT = await bcrypt.hash('SandiRT123!', 10);
+    const hashBendahara = await bcrypt.hash('SandiBendahara456!', 10);
+    const hashSekretaris = await bcrypt.hash('SandiSekretaris789!', 10);
+    const hashWarga = await bcrypt.hash('SandiWarga321!', 10);
 
     // ─────────────────────────────────────────────
     // 1. USERS  (3 pengurus + 10 warga = 13 user)
     // ─────────────────────────────────────────────
     console.log('📋 Seeding Users...');
 
+    const randEmailSuffix = Math.floor(Math.random() * 1000);
+    const emailRT = 'dedi.setiadi@gmail.com';
+    const emailBendahara = `bendahara${randEmailSuffix}@gmail.com`;
+    const emailSekretaris = `sekretaris${randEmailSuffix}@gmail.com`;
+
     const userRT = await User.create({
-      name: 'Bapak Suparman',
-      email: 'rt@wargaklik.com',
-      password: hashedPassword,
-      no_telepon: '081234567890',
+      name: 'Dedi Setiadi & Sandra Puspita',
+      email: emailRT,
+      password: hashRT,
+      no_telepon: '08' + Math.floor(1000000000 + Math.random() * 9000000000).toString().substring(0, 10),
       role: 'rt',
     });
 
     const userBendahara = await User.create({
       name: 'Ibu Hartini',
-      email: 'bendahara@wargaklik.com',
-      password: hashedPassword,
-      no_telepon: '081234567891',
+      email: emailBendahara,
+      password: hashBendahara,
+      no_telepon: '08' + Math.floor(1000000000 + Math.random() * 9000000000).toString().substring(0, 10),
       role: 'bendahara',
     });
 
     const userSekretaris = await User.create({
       name: 'Pak Gunawan',
-      email: 'sekretaris@wargaklik.com',
-      password: hashedPassword,
-      no_telepon: '081234567892',
+      email: emailSekretaris,
+      password: hashSekretaris,
+      no_telepon: '08' + Math.floor(1000000000 + Math.random() * 9000000000).toString().substring(0, 10),
       role: 'sekretaris',
     });
 
     const wargaRawData = [
-      { name: 'Budi Santoso',     email: 'budi@email.com',     no_telepon: '082111111111', no_rumah: 'A-01', no_kk: '3501010101010001', jumlah_anggota: 4, status_rumah: 'tetap' },
-      { name: 'Siti Rahayu',      email: 'siti@email.com',     no_telepon: '082222222222', no_rumah: 'A-02', no_kk: '3501010101010002', jumlah_anggota: 3, status_rumah: 'tetap' },
-      { name: 'Ahmad Fauzi',      email: 'ahmad@email.com',    no_telepon: '082333333333', no_rumah: 'A-03', no_kk: '3501010101010003', jumlah_anggota: 5, status_rumah: 'kontrak' },
-      { name: 'Dewi Lestari',     email: 'dewi@email.com',     no_telepon: '082444444444', no_rumah: 'B-01', no_kk: '3501010101010004', jumlah_anggota: 2, status_rumah: 'tetap' },
-      { name: 'Rudi Hartono',     email: 'rudi@email.com',     no_telepon: '082555555555', no_rumah: 'B-02', no_kk: '3501010101010005', jumlah_anggota: 4, status_rumah: 'kontrak' },
-      { name: 'Ani Kusuma',       email: 'ani@email.com',      no_telepon: '082666666666', no_rumah: 'B-03', no_kk: '3501010101010006', jumlah_anggota: 3, status_rumah: 'tetap' },
-      { name: 'Hendra Wijaya',    email: 'hendra@email.com',   no_telepon: '082777777777', no_rumah: 'C-01', no_kk: '3501010101010007', jumlah_anggota: 6, status_rumah: 'tetap' },
-      { name: 'Rina Marlina',     email: 'rina@email.com',     no_telepon: '082888888888', no_rumah: 'C-02', no_kk: '3501010101010008', jumlah_anggota: 2, status_rumah: 'kontrak' },
-      { name: 'Joko Prasetyo',    email: 'joko@email.com',     no_telepon: '082999999999', no_rumah: 'C-03', no_kk: '3501010101010009', jumlah_anggota: 5, status_rumah: 'tetap' },
-      { name: 'Yuni Astuti',      email: 'yuni@email.com',     no_telepon: '081000000000', no_rumah: 'D-01', no_kk: '3501010101010010', jumlah_anggota: 3, status_rumah: 'tetap' },
-    ];
+      { name: 'Egi', no_rumah: 'HJ1/8' },
+      { name: 'Eko & Maureen', no_rumah: 'HJ1/4' },
+      { name: 'Yoko & Erna', no_rumah: 'HJ1/10' },
+      { name: 'Desma & Edy', no_rumah: 'HJ1/12' },
+      { name: 'Joshua', no_rumah: 'HJ1/14' },
+      { name: 'Zahra & Rio', no_rumah: 'HJ2/1' },
+      { name: 'Lukito & Keke', no_rumah: 'HJ2/3' },
+      { name: 'Wenny & Aria', no_rumah: 'HJ2/5' },
+      { name: 'Tatang & Rini', no_rumah: 'HJ2/7' },
+      { name: 'Budi & Yeyen', no_rumah: 'HJ2/9' },
+      { name: 'Bina & Agung', no_rumah: 'HJ2/11' },
+      { name: 'Yadi & Vivi', no_rumah: 'HJ2/15' },
+      { name: 'Raymond & Marris', no_rumah: 'HJ2/17' },
+      { name: 'Rika & Hendra', no_rumah: 'HJ3/3' },
+      { name: 'Jimmy', no_rumah: 'HJ3/5' },
+      { name: 'Darwis', no_rumah: 'HJ3/7' },
+      { name: 'Dibby & Ira', no_rumah: 'HJ3/8' },
+      { name: 'Endy & Yani', no_rumah: 'HJ3/6' },
+      { name: 'Indra & Tala', no_rumah: 'HJ3/4' },
+      { name: 'Dedi Setiadi & Sandra Puspita', no_rumah: 'HJ3/2' },
+      { name: 'Dudi', no_rumah: 'HJ3/9' },
+      { name: 'Erwin & Hairi', no_rumah: 'HJ3/12' },
+      { name: 'Her', no_rumah: 'HJ3/17' },
+      { name: 'Purwanti', no_rumah: 'HJ5/1' },
+      { name: 'Niken', no_rumah: 'HJ5/2' },
+      { name: 'Devara & Syifa', no_rumah: 'HJ5/3' },
+      { name: 'Irma', no_rumah: 'HJ5/4' },
+      { name: 'Dhita & Bintang', no_rumah: 'HJ5/5' },
+      { name: 'Ben & Lisa', no_rumah: 'HJ5/7' },
+      { name: 'Mario & Nakita', no_rumah: 'HJ5/9' },
+      { name: 'Marlina & Aulia', no_rumah: 'HJ5/11' },
+      { name: 'Rahmadi & Indi', no_rumah: 'HJ5/12' },
+      { name: 'Titik', no_rumah: 'HJ5/14' },
+    ].map((w, index) => {
+      const emailName = w.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return {
+        name: w.name,
+        email: `${emailName}${Math.floor(Math.random() * 1000)}@gmail.com`,
+        no_telepon: '08' + Math.floor(1000000000 + Math.random() * 9000000000).toString().substring(0, 10),
+        no_rumah: w.no_rumah,
+        no_kk: `3501010101010${String(index + 1).padStart(3, '0')}`,
+        jumlah_anggota: Math.floor(Math.random() * 4) + 1,
+        status_rumah: Math.random() > 0.8 ? 'kontrak' : 'tetap',
+      }
+    });
 
     const wargaUsers = [];
     const wargaRecords = [];
@@ -75,7 +117,7 @@ async function seed() {
       const user = await User.create({
         name: w.name,
         email: w.email,
-        password: hashedPassword,
+        password: hashWarga,
         no_telepon: w.no_telepon,
         role: 'warga',
       });
@@ -341,11 +383,11 @@ async function seed() {
     console.log(`  notifikasi     : ${notifData.length} (10 warga + 10 RT + 5 bendahara + 5 sekretaris)`);
     console.log(`  laporan        : ${laporanData.length}`);
     console.log('══════════════════════════════════════════════');
-    console.log('\n🔑  Kredensial login (semua password: password123):');
-    console.log('  RT            : rt@wargaklik.com');
-    console.log('  Bendahara     : bendahara@wargaklik.com');
-    console.log('  Sekretaris    : sekretaris@wargaklik.com');
-    console.log('  Warga (contoh): budi@email.com, siti@email.com, ..., yuni@email.com');
+    console.log('\n🔑  Kredensial login:');
+    console.log(`  RT            : ${emailRT} (Sandi: SandiRT123!)`);
+    console.log(`  Bendahara     : ${emailBendahara} (Sandi: SandiBendahara456!)`);
+    console.log(`  Sekretaris    : ${emailSekretaris} (Sandi: SandiSekretaris789!)`);
+    console.log(`  Warga (contoh): ${wargaRawData[0].email} (Sandi: SandiWarga321!)`);
 
     process.exit(0);
   } catch (error) {
